@@ -14,8 +14,8 @@ def msgt(m): dashes(); msg(m); dashes()
 def msgx(m): msgt(m); sys.exit(0)
 
 # Deifnes who is the list manager and the defaultPw for all the lists. 
-adminEmail = 'luis_silva@harvard.edu'
-defaultPw = 'S3cur1ty9000'
+adminEmail = ''
+defaultPw = ''
 mailmanCmdLocation = '/usr/lib/mailman/bin/'
 pwd = '/mailmanSync/groupSync/temp_files'
     
@@ -24,9 +24,9 @@ def get_ldap_connection():
     Bind to server, return connection
     """
     #set up ldap connection
-    server='10.242.89.13'
+    server=''
     who='cn=groupsync,ou=Unmanaged Service Accounts,dc=rc,dc=domain'
-    cred='S3cur1ty9000'
+    cred=''
     print 'pre-open'
     l=ldap.open(server)
     print 'post-open'
