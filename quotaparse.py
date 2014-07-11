@@ -1,4 +1,4 @@
-# Script to pull out quota data in to a spreadsheet
+# Script to pull out xfs quota data in to a spreadsheet
 # Writen by Luis Silva 03-14-2012
 #
 import os
