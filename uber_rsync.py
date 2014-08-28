@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# turning up  the heat on rsync!
+
 import os
 import sys
 import glob
@@ -22,6 +24,7 @@ def walk_source_dir(source_dir):
     count +=1
     if count == 1000:
       return tree_list
+  return tree_list
       
 def find_deepest_branch(relative_path_list):
   branch_depth = []
