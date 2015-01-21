@@ -11,7 +11,6 @@
 
 import os,sys,string,sh,ldap
 from stat import *
-from pyad import *
 
 # Setting this gobal value for the top level directory in both isilons all shares are
 # at the next level.
@@ -76,7 +75,7 @@ def get_ldap_connection():
     """
     #set up ldap connection
     server=''
-    who='cn=groupsync,ou=Unmanaged Service Accounts,dc=rc,dc=domain'
+    who=''
     cred=''
     print 'pre-open'
     l=ldap.open(server)
@@ -89,13 +88,63 @@ def get_ldap_connection():
 
 def get_ldap_group_obj(groupname):
     global LDAP_CONN
+    email_srch_result= []
     """ Searches, bases on the cn"""
-    base ='ou=Lab_Instruments,ou=Domain Groups,ou=CGR,dc=rc,dc=domain'
+    base ='ou=Domain Groups,dc=rc,dc=domain'
     scope = ldap.SCOPE_SUBTREE
-    ldap_filter = 'sAMAccountName=%s' % groupname
-    attrs = ['*']
-    # print ldap_filter
+    ldap_filter = 'gidNumber=%s' % groupname
+    #attrs = ['*']
+    attrs = ['member']
+    print ldap_filter
     srch_results = LDAP_CONN.search_ext_s(base,scope,ldap_filter,attrs)
+    for userDN in srch_results:
+        if 'member' in userDN[1]:
+            for member in userDN[1]['member']:
+                email_srch_result = get_ldap_user_obj(member)
+    return email_srch_result
+    
+LDAP_QUERY_CNT = 0
+EMAIL_LOOKUP_CNT =0
+USER_EMAIL_LOOKUP = {}	# { userDN : email }
+def get_ldap_user_obj(userDN):
+    global USER_EMAIL_LOOKUP, EMAIL_LOOKUP_CNT
+    EMAIL_LOOKUP_CNT +=1
+    if USER_EMAIL_LOOKUP.has_key(userDN):
+         return USER_EMAIL_LOOKUP.get(userDN, None)
+
+    """ Searches, bases on the dn"""
+    global LDAP_CONN, LDAP_QUERY_CNT
+    ldap_conn = LDAP_CONN
+    base ='ou=Domain Users,dc=rc,dc=domain'
+    cgrbase='ou=CGR,dc=rc,dc=domain'
+	#Old OU's that have been moved into Domain Users
+    #mcbbase='ou=MCB,dc=rc,dc=domain'
+    #oebbase='ou=OEB,dc=rc,dc=domain'
+    #ccbbase='ou=ccb,dc=rc,dc=domain'
+    #cnsbase='ou=CNS,dc=rc,dc=domain'
+    scope = ldap.SCOPE_SUBTREE
+    #ldap_filter = '(&(objectCategory=person)(objectClass=User))' 
+    ldap_filter = '(&(objectClass=person)(distinguishedName=%s))' % userDN
+    print ldap_filter
+    attrs = ['distinguishedName', 'mail']
+    scrhArray = []
+    
+    seersrch = ldap_conn.search_ext_s(base,scope,ldap_filter,attrs)
+    cgrsrch = ldap_conn.search_ext_s(cgrbase,scope,ldap_filter,attrs)
+    
+    srchArray = [seersrch,cgrsrch]
+    srch_results = 'null'
+    for srch in srchArray:
+    	#print '>> using srch', srch
+	for dn, keys in srch:
+		if (dn == userDN):
+			if keys.has_key('mail'):
+				srch_results = keys['mail']
+			        LDAP_QUERY_CNT+=1		
+    				USER_EMAIL_LOOKUP.update({userDN:srch_results})
+	   			#msg('(%s) Found! %s' % (LDAP_QUERY_CNT, keys['mail']))
+			else:
+    				USER_EMAIL_LOOKUP.update({userDN:None})
     return srch_results
 
 if __name__=='__main__':
