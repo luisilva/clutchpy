@@ -74,9 +74,9 @@ def get_ldap_connection():
     Bind to server, return connection
     """
     #set up ldap connection
-    server='dc3-rc.rc.domain'
-    who='cn=groupsync,ou=Unmanaged Service Accounts,dc=rc,dc=domain'
-    cred='S3cur1ty9000'
+    server=''
+    who=''
+    cred=''
     print 'pre-open'
     l=ldap.open(server)
     print 'post-open'
