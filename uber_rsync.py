@@ -57,7 +57,7 @@ def main():
   parser = argparse.ArgumentParser(description="Runs multiple rsyncs between source and destination in attempt to speed up mirror copy")
   parser.add_argument("-s", "--source-dir", required=True, help="source directory") 
   parser.add_argument("-d", "--dest-dir", required=True, help="destination directory") 
-  parser.add_argument("-a", "--arguments", required=False, help="addition rsync arguments eg. A = extemded attrinutes or --log-file=FILE")  
+  parser.add_argument("-a", "--arguments", required=False, help="addition rsync arguments eg. A = extended attrinutes or --log-file=FILE")  
   parser.add_argument("-b", "--debug", action='store_true',required=False, default=False,help="verbose output directory")
   parser.add_argument("-m", "--max-load", required=False, default=100, help="maxiumum acceptable load limit default value is 100")
 
